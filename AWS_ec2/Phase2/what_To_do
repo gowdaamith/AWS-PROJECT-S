@@ -1,0 +1,197 @@
+Step 1: Understand the root volume
+-------------------------------------
+Your EC2 already has:
+*Root EBS volume (OS disk)
+    - Usually: /dev/xvda
+
+Check it using: 
+  >> lsblk
+
+You will see something like this :
+ubuntu@ip-172-31-39-152:~$ lsblk
+NAME     MAJ:MIN   RM  SIZE RO TYPE MOUNTPOINTS
+loop0      7:0      0 27.6M  1 loop /snap/amazon-ssm-agent/11797
+loop1      7:1      0   74M  1 loop /snap/core22/2163
+loop2      7:2      0 50.9M  1 loop /snap/snapd/25577
+xvda     202:0      0    8G  0 disk 
+├─xvda1  202:1      0    7G  0 part /
+├─xvda14 202:14     0    4M  0 part 
+├─xvda15 202:15     0  106M  0 part /boot/efi
+└─xvda16 259:0      0  913M  0 part /boot
+
+IMP : 
+*Root volume contain's the OS 
+*if deleted -> instance is unusable
+
+Step 2: Create a New EBS volume
+----------------------------------------
+Go to the Instance -> Select the instance -> Go to the actions ->  Storage  -> Attach volume 
+-> Click on create volume ->  create volume [same AZ as the instance ] ->  give the name to 
+created volume [any ] ->  attach the volume 
+
+IMP :The availability zone of the volume and the instance should be the same 
+
+Step 3: Now verify the volume in the instance 
+----------------------------------------------
+ssh into the instance or connect to the instance 
+>> lsblk 
+You'll seee: 
+ubuntu@ip-172-31-39-152:~$ lsblk
+NAME     MAJ:MIN   RM  SIZE RO TYPE MOUNTPOINTS
+loop0      7:0      0 27.6M  1 loop /snap/amazon-ssm-agent/11797
+loop1      7:1      0   74M  1 loop /snap/core22/2163
+loop2      7:2      0 50.9M  1 loop /snap/snapd/25577
+xvda     202:0      0    8G  0 disk 
+├─xvda1  202:1      0    7G  0 part /
+├─xvda14 202:14     0    4M  0 part 
+├─xvda15 202:15     0  106M  0 part /boot/efi
+└─xvda16 259:0      0  913M  0 part /boot
+xvdbb    202:13568  0    5G  0 disk /data
+
+*No partition
+*No  filesystem
+*Not mounted yet
+
+Step 4: Create a filesystem
+------------------------------------------------
+>> sudo mkfs.ext4 /dev/xvdf
+This format the disk
+**Data  will be erased (safe now because it's new)
+
+Step 6: Mount the volume
+-----------------------------------------------
+>> sudo mkdir data
+>> sudo mount /dev/xvdbb /data
+
+Verify it using:
+df -h 
+
+ubuntu@ip-172-31-39-152:~$ df -h
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/root       6.8G  1.9G  4.9G  28% /
+tmpfs           479M     0  479M   0% /dev/shm
+tmpfs           192M  888K  191M   1% /run
+tmpfs           5.0M     0  5.0M   0% /run/lock
+/dev/xvdbb      4.9G   28K  4.6G   1% /data
+/dev/xvda16     881M   89M  730M  11% /boot
+/dev/xvda15     105M  6.2M   99M   6% /boot/efi
+tmpfs            96M   12K   96M   1% /run/user/1000
+
+
+Step 7: Store Data
+-----------------------------------------------
+sudo touch /data/phases2-test.txt
+echo "EBS DATA SURVIVES EC2 "| sudo tee  /data/phases2-test.txt
+
+
+Step 8: Detach and Reattach test
+------------------------------------------------
+Detach :
+Aws console -> volumes -> Select the volume that attached to the instance -> detach it 
+AGAIN
+Reattach the volume to the instance  and see the file and it should show  the file 
+
+IMP : some times it will show error so its necessary to create the snapshot of the volume  
+      if the snap shot is not created or have a snapshot then use these commands these are 
+      not recommnaded in the production but can be used if necessary
+
+Also you can check if the file system by 
+>> sudo lsblk -f 
+if the output doesn't show like this and if its blank then the file system is missing 
+xvdbb  ext4
+      -------
+Run a filesystem check 
+
+>> sudo umount /data
+>> sudo fsck -y /dev/xvdbb
+if fsck finds an errror ,it will fix them automatically 
+
+Then mount them again : 
+>> sudo mount /dev/xvdbb /data
+
+Then verify again 
+If the fsck show's any errro then you should recover the volume from the snapshot 
+
+
+Step 9: Auto mount on Reboot(Real world)
+---------------------------------------------------
+Get the UUID
+>> sudo blkid 
+
+Copy the blKid and paste in the following file 
+>> sudo vim /etc/fstab
+
+
+The syntax would be: 
+>> UUID="THE ID OF THE VOLUME WITH NO SPACE B/W THE UUID AND = AND ID" /data/ ext4 defaults.nofail 0,2
+
+after saving  reboot the system :
+
+>> sudo reboot 
+
+Then check if the filesystem is persent or not by using :
+>> df -h 
+
+
+Step 10: Snapshots(Backup and Recovery)
+--------------------------------------------------
+Create a snapshot 
+*Go to the ec2 dashboard 
+*Go to the snaphots and click on the create snapshot
+*Select the source as the volume 
+*Select the volume to which you want to create the snapshot
+
+Click on the create snapshot 
+
+Snapshot is :
+*Incremetal
+*Stored in S3(managed by AWS)
+*Region specific
+
+Step 11: Restore form the snapshot 
+-------------------------------------------------
+Go to the AWS console -> Go to the Ec2 dashboard -> Click on the snapshot's -> Select the snapshot you want
+-> click on actions -> Create a new volume ->  
+In the volume you choose the AZ and the volume type  you want and but the size can be increased but cannot be
+decreased
+
+Click on create volume
+Attach the volume in the same as above mentioned and mount it and you should also have to add it to the /etc/fstab
+if you want it to persist even after the reboot 
+
+No need to format the Volume that is obtianeed from the snapshot 
+____________________________________________________________________________________________________________
+
+Not for this it will not work for the volume create from the snapshot 
+If the volume is already formatted and has the data  then partitioning it will destroy the data 
+if you want to start fresh then you can do it 
+
+To partition the disk use the following command 
+>>lsblk 
+To see the blk's
+
+ start the partition 
+>> sudo fdisk /dev/xvdf
+
+Create the partition :
+n      → new partition
+p      → primary
+1      → partition number
+<enter>→ default first sector
+<enter>→ default last sector (use full disk)
+
+verify the partition : 
+>> lsblk 
+
+You should now see like this : 
+xvdf
+└─xvdf1
+
+The you can create a filesystem:
+>> sudo mkfs.ext4 /dev/xvdbb
+mount tha partition and use it 
+
+
+
+
+
