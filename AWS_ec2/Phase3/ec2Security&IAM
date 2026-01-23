@@ -1,0 +1,20 @@
+Goal:
+Secure EC2 access and allow EC2 to talk to AWS services without access keys.
+
+What You’ll Learn in Phase 3
+By the end, you’ll understand:
+
+*Why IAM roles are better than access keys
+*How EC2 securely talks to AWS services
+*What Instance Metadata Service (IMDS) is
+*Security Groups vs NACLs
+*How to harden SSH access
+
+Here we are going to do :
+1.Create an IAM Role for EC2
+2.Attach IAM Role to EC2
+3.Test the IAM Role
+4.Understand Instance Metadata
+5.Enforce IMDSv2(Security Hardening)
+6.Security Group Harding 
+7.Disable Password login 
