@@ -1,0 +1,23 @@
+PHASE 2: EBS (Elastic Block Store) – Deep Dive
+
+Goal:
+Understand how data survives, how storage works, and how recovery actually happens in AWS.
+
+What You’ll Learn in Phase 2
+
+*What EBS really is
+*Root volume vs additional volumes
+*How to attach/detach volumes
+*How data persists even if EC2 is terminated
+*How snapshots work (backups & recovery)
+
+Here we are going to first 
+1.Create a instance
+2.Create a volume
+3.Attach the Volume  to the instance
+4.Format the volume in the instance
+5.Mount the instance so that it can be used 
+6.Add the volume UUID to the /etc/uuid  so that the volume will be attached to the instance 
+  even if the instance is rebooted 
+7.Create a snapshot of the volume and create new volume from the snapshot which work as a backup volume managed
+  by the AWS
