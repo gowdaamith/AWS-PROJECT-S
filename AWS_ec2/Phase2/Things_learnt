@@ -1,0 +1,36 @@
+To see the block use this command :
+>> lsblk                              #show disk and the partition 
+
+To format the disk use this command :
+>> sudo mkfs.ext4 /dev/xvdf           
+
+To mount it use the following command :
+>> sudo mkdir /data
+>> sudo mount /dev/xvdf /data
+
+verify using :
+>> df -h 
+                                       #shows the disk usage 
+To see the UUID of the disk :
+>> sudo blkid
+
+Edit the fstab and add the UUID to make the volume persistent even after the reboot
+
+>> sudo vim /etc/fstab  
+add :
+UUID=the uuid of the volume  /data ext4 defaults,nofail 0 2
+
+To test the fstab :
+>> sudo mount -a
+
+To 
+
+To reboot :
+>> sudo reboot
+
+
+Make volume -> format it -> mount it  -> then use it 
+if you want to partition the volume partition it before  formatting or else it will be difficult and  you can 
+loose the data
+
+
