@@ -1,0 +1,9 @@
+Phase 1 Summary (VERY IMPORTANT)
+Concept	    What you learned
+EC2	        Virtual server
+AMI	        OS template
+Key Pair	  Secure login
+SG	        Firewall
+User Data	  Boot automation
+Public IP	  Temporary
+Elastic IP	Static
