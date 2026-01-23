@@ -1,0 +1,102 @@
+Step 1: Create an IAM Role for EC2
+------------------------------------
+
+Create a Role : 
+1.Go to the AWS console
+2.Go to the IAM -> Roles -> Create Role
+3.Use Case: EC2
+4.Permissions:
+  * Attach : AmzonS3ReadonlyAccess
+5.Role Name: 
+  ec2-phase-s3-role
+Create a role
+
+Step 2: Attach IAM Role to EC2
+-------------------------------------
+1.Ec2 instance
+2.Select your intance
+3.Actions -> Security -> Modify IAM role
+4.Choose: 
+   ec2-phase3-s3-role
+5.Save
+
+Step 3: Test IAM Role 
+---------------------------------------
+aws s3 ls
+
+if it lists buckets -> success
+
+This is how it works:
+*Ec2 gets temporary credentials
+*Provided via instance metadata service
+*Automaticallly rotated by AWS
+
+Step 4: Understand Instance metadata
+-------------------------------------------
+From Ec2:
+try :
+
+curl http://169.254.169.254/latest/meta-data/iam/security-credentials/
+
+You'll see your role name:
+This endpoint provide :
+
+*IAM credentials
+*Instance info
+*AZ, IP, instance ID
+
+Step 5 : Enforce IMDSv2(security hardening)
+-------------------------------------------------
+imdv1  is vulnerable to the SSRF attacks 
+
+Enable imdv2(console)
+1.Ec2 -> instance ->Actions
+2.Instance setting -> Modify metadata options
+3.Set :
+   - IMDS version : IMDSV2 ONLY 
+   - Hop limit : 1
+4.save 
+
+Test Imdsv2:
+
+
+TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" \
+  -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
+
+curl -H "X-aws-ec2-metadata-token: $TOKEN" \
+  http://169.254.169.254/latest/meta-data/instance-id
+
+STEP 6: Security Group Hardening 
+-----------------------------
+Best Practices
+
+SSH: Your IP only
+HTTP: Public
+No unnecessary ports
+
+👉 Remove:
+0.0.0.0/0 from SSH
+
+STEP 7: Disable Password Login (ubuntuu)
+------------------------------------------
+Edit SSH config:
+>> sudo vim /etc/ssh/ssh_config
+
+set: 
+PasswordAuthentication no
+PermitRootLogin no
+
+Restart the SSH:
+>> sudo systemctl restart ssh 
+
+
+
+
+
+
+
+
+
+
+
+
