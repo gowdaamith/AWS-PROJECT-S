@@ -1,0 +1,6 @@
+*The IP changes if you do not enable the elastic IP
+*Use the user data to run a command automatically at the start of the first start of the instance 
+*To check any error just use  
+>> sudo cat /var/log/cloud-init-output.log
+
+This will all the logs  information that happened in that instance
