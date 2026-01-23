@@ -1,0 +1,23 @@
+Phase 1: EC2 Fundamentals (Core Basics)
+
+What you’ll build
+=>> A simple web server running on EC2 (Nginx / Node.js / Apache).
+
+Features you’ll explore
+*EC2 instance types (t2.micro vs t3.micro)
+*AMI (Amazon Linux 2)
+*Key pairs (PEM file)
+*Security Groups
+*Public IP vs Elastic IP
+*User Data script
+
+Tasks
+Launch an EC2 instance
+Connect using SSH
+Install a web server
+Access it via browser
+Restart instance → observe IP change
+Attach Elastic IP → observe stability
+
+👉 Concepts learned:
+Instance lifecycle, networking basics, SSH, bootstrapping
