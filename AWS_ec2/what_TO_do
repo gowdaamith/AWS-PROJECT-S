@@ -1,0 +1,113 @@
+Goal:
+
+Launch an EC2 instance and host a simple web page while understanding what every click actually means.
+
+Step 1: Choose a Region 
+------------------------------------------
+Region : ap-south-1 (Mumbai)
+
+The closer the region to you 
+*lower the  latency 
+*Region affects the IP,no of AZ ,pricing 
+
+
+
+Step 2: Name the instance
+-----------------------------------------
+*Go to the search bar and search for the ec2 option and  click on it 
+*Click on the instances and launch the instances
+
+Name your instance : 
+>> ec2-phase1-web
+
+Step 3: Choose the AMI 
+-----------------------------------------
+Select : 
+ ububntu  
+
+What this means : 
+*AMI: template of the os + basic tools
+
+Step 3: Choose the instance type
+-----------------------------------------
+Select t2.micor as it comes under the free tire [specification of it is 1 CPU AND  1GB RAM]
+
+Step 4: Key pair [for ssh access]
+-----------------------------------------
+Name of the key pair : ec2-phase1-key
+Type : RSA
+Format: .pem
+
+Download and store it safely 
+
+Step 5: Security group 
+----------------------------------------
+Create a security group 
+with the name :
+ec2-phase1-web-sg
+
+And allow the following inbound rules:
+
+Allow:
+
+Type	Port	Source
+SSH	  22	  My IP
+HTTP	80   	Anywhere
+
+step 5 : Storage (keep it as default now )
+------------------------------------------
+
+Step 6: User Data (Auto setup web server)
+------------------------------------------
+Go to the advanced section ,There select  USER DATA and paste this :
+
+sudo update -y
+sudo install -y inginx
+sudo systemctl start nginx
+sudo systemctl enable nginx
+echo "<h1> EC2 phase 1 success </h1> > | sudo tee  /usr/share/nginx/html/index.html
+
+
+Step 7: Access your website Using the public ip
+------------------------------------------------
+http://<public-ip>
+
+You should see : ec2 phase 1 success
+
+Step 8: Do these experiment 
+----------------------------------------------
+As you choose the enable assign public ip ,in the network section  
+the ip will change when you stop and restart the ec2 
+
+if you want a stable ip choose elastic ip 
+
+_____________________________________________________________________________________________________________
+To ssh into the machine use the command 
+
+>> ssh -i pemfile.pem username@public-ip
+if the permissoin issue occur : 
+>> chmod  400 pemfile.pem
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
