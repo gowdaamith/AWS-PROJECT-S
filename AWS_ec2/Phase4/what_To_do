@@ -1,0 +1,48 @@
+STEP 1: Launch a normal Ec2 instance
+--------------------------------------
+
+STEP 2: Configure it once
+-------------------------------------
+Inside the Ec2 run the following commands
+>> sudo apt update
+>> sudo apt install -y nginx
+>> echo "<h1> Phase 4 Golden AMI </h1> | sudo tee /var/www/html/index.html
+>> sudo systemctl enable nginx
+
+Verify it using : 
+>> curl localhost
+
+Step 3: Create AMI form this Ec2:
+---------------------------------------
+Console path : 
+
+Go to the console -> Search for the Instances in the search bar -> Select the instance 
+->  Actions -> Image and templates ->Create a image
+
+When you specify the things and click on  create image the following things happen:
+1.Ec2 instance reboots ,means everything stops writing to disk 
+2.AWS takes a backup of the disk ,your root volume ,OS ,apps,configs,files ,this backup is callled as snapshot 
+3.All the EBS volume attached to the instaces are included by default and AWS alos include them and take the  snapshot 
+4.AMI points to that snapshot
+5.Now you can use this to create a new ec2 or a server similar to this
+
+
+Wait until the AMI status = available
+
+Step 4: Lauch a new Ec2 using this AMI 
+-----------------------------------------
+While launching : 
+*Choose MY AMIs
+*Select "AMI THAT YOU HAVE JUST CREATE"e
+*NO user data
+*No manual setup 
+
+Step 5: Test the new Ec2
+----------------------------------------
+SSH into it and run:
+>> curl localhost 
+If you see : 
+>> Phase 4 works 
+
+The everything works 
+
