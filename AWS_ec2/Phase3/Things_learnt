@@ -1,0 +1,69 @@
+*Attach  a role to the Ec2 instead of the configuring the AWS or providing the access key
+*The IMDSV2 comes auto enable now  , you can only change the hop limit  
+
+Problem with IMDSv1 (old behavior)
+
+IMDSv1 allowed:
+------------------------------------------------
+GET http://169.254.169.254/latest/meta-data/
+No authentication. No protection.
+
+🚨 This caused serious security issues:
+*SSRF attacks (Server-Side Request Forgery)
+*If an app had a vulnerability, an attacker could:
+*Call metadata endpoint
+*Steal IAM role credentials
+*Access S3, DynamoDB, etc.
+*This happened in real-world breaches.
+
+What IMDSv2 fixes
+IMDSv2 adds a session-based token.
+
+Flow:
+
+*Instance requests a token (PUT request)
+*Token must be sent in headers for every metadata call
+*Token expires automatically
+
+So now:
+
+Random HTTP requests ❌
+Browser tricks ❌
+SSRF without custom headers ❌
+Only legitimate software can access metadata.
+
+Why Hop Limit = 1 is critical
+-----------------------------------------------
+What is hop limit?
+It controls how far metadata requests can travel.
+1 → only the EC2 instance itself
+>1 → containers, proxies, or forwarded requests
+
+Why higher hop limit is dangerous
+If hop limit > 1:
+Containers or misconfigured proxies
+
+Compromised apps
+Can reach metadata endpoint
+With Hop Limit = 1:
+Requests must originate from the instance itself
+Prevents container escape & proxy abuse
+
+
+
+
+TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" \
+  -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
+
+curl -H "X-aws-ec2-metadata-token: $TOKEN" \
+  http://169.254.169.254/latest/meta-data/instance-id
+
+To Disable the password login changes these in this path AWS will automatically come with this :
+>> sudo nano /etc/ssh/sshd_config
+>> 
+PasswordAuthentication no
+PermitRootLogin no
+>> sudo systemctl restart ssh 
+
+
+
