@@ -1,0 +1,33 @@
+The difference b/w the AMI[images] and Templates
+-------------------------------------------------
+
+AMI -> A saved copy of the sever's disk and software 
+Contains : 
+*Operating system
+*Installed apps
+*Config files
+*Files on disk 
+
+Purpose: 
+*Recreate the same server setup  
+*backup and cloning 
+
+Template :-> a set of rules that tells AWS how to create an Ec2 instance
+
+contains : 
+*Which AMI to use 
+*instance type
+*Key pair
+*Security group
+*Network setting 
+*User -data (startup scripts)
+
+Purpose : 
+*Standardize how the instance should be launched
+*Avoid manual configuratioon each time 
+
+use the command to check where the instance configuratioon like a website is reachable or not by using :
+>> curl localhost
+
+if you add storage agian in the storage section while creating the ec2 from the ami this will add up to the 
+ami strage for example [ 8+ 8] .But you should format it  to use it 
