@@ -1,0 +1,34 @@
+The problem that we are looking up today  and trying to solve is :
+
+Upto today ,while setting up  the instance we would follow these steps like : 
+1.Launch the Ec2
+2.SSH into it 
+3.install nginx / packages
+4.configure the things manually 
+
+Now the problem is :
+1.What if this EC2 dies
+2.What if i need 10 identical EC2's  
+3.Do i want to repeat these commands every time?
+
+The answer is NO
+
+---------------------------------------------------------------------------------------------------------------
+Here we are going to create a Ec2 image that already contain your setup ,so every new Ec2 is ready immediately 
+
+What is AMI?
+---------------------------
+A AMI is  just :
+*A saved copy of your EC2'S disk
+*Including :
+  - OS
+  - Installed software
+  - Config files
+
+Think of it like a: 
+- Taking a  full backup of a configured system and reusing it
+
+When you click Create Image:
+1.AWS takes a snapshot of the root volume 
+2.Register it as an AMI
+3.That AMI can now launch new EC2
