@@ -1,0 +1,23 @@
+What  problem we are going to solve in Phase 5
+
+Until now : 
+*YOu launch one Ec2
+*if it dies -> is down 
+*if the traffic increases -> the server become slow or it crashes
+
+Here we are going to understanc how to solve theses  problemsd 
+
+
+what we are going to do here is : 
+    Multiple Ec2 behind a load balancer ,created automatically using the AMI  with the help of the autoscaling 
+
+What we will build here is :
+
+Internet
+    |
+Application load balancer (ALB)
+      |
+Auto scaling group (ASG)
+       |
+EC2 Instances (from your AMI )
+
