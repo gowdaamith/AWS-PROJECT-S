@@ -36,5 +36,25 @@ Ex:
 /blog -> Ec2 group 2
 
 This  is usefull for microservices 
-*HTTPS / SSL termination 
-*
+*HTTPS / SSL termination : ALB handles SSL certificates so you don't need SSL config on each EC2
+
+Auto Scaling Group : 
+----------------------------
+ASG is an AWS service that automatically manages Ec2 instances for you ;
+*It decides :
+- How many instances should exits
+- When to create them 
+- When to terminate them
+- Where (AZ/Subnet) they should run 
+
+You don't need to manage the instance you need to manage the rules
+Core componects of ASG:
+An ASG is defined by 3 things : 
+1.Launch template
+2.Subnets (Where to place Ec2)
+3.Capacity Rule (How many)
+
+
+Grace period  :>> prevents instance termination 
+Warmup perriod :>> Prevent bad scaling decision 
+Capacity reservation is :>> booking the instancs for scaling in advance
