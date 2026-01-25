@@ -1,0 +1,129 @@
+STEP 1:  This need a Base Instance from the Phase 4
+----------------------------------------------------
+So we are following these steps:
+1.Launch base Ec2
+2.Configure the nginx
+3.Create  AMI 
+4.Launch Ec2 from AMI 
+5.Prepare for phase 5
+
+
+STEP 2: Create a Target Group 
+----------------------------------------------------
+This is where the load balancer will send the traffic
+
+console path : 
+EC2 -> Target Group -> Create Target group 
+
+Setting : 
+1.Target type: Instance
+2.Protocol : HTTP
+3.Port: 80
+4.VPC: Default (same as Ec2)
+5.Health check path: /
+
+Name : 
+>> phase5-tg
+click create target group
+Do not register instance yet 
+
+STEP 3: Create an application Load Balancer 
+-------------------------------------------------------
+Console path : 
+Ec2 -> Loadbalancer ->Create a Load balancer -> Select Application loacbalancer
+
+Basic settings: 
+1.Name :  phase5:alb
+2.Schema : Internet facing 
+3.IP type: IP v4
+
+Network :
+VPC: Default
+Subnets: Select at least 2 Az
+
+Security Group :
+Create a new sG : 
+>> HTTP:80 
+>> forward to : phase5-tg
+
+>>>>>Create a loadbalancer
+
+STEP 4: Create a Lauch Template 
+----------------------------------------------------------
+This defines how Ec2's are created 
+
+Console path : 
+--------------
+Ec2 -> Launch Template -> Create a launch template 
+
+Name: phase5-lt
+AMI:  phase4-nginx-ami
+Instance type: t2.micro /t3.micor
+Key pair : select key pair 
+
+Network 
+*Do not Choose subnet
+*Do not auto assign public IP
+
+Security Group:
+*Allow HTTP(80)
+*Allow SSH (22)
+
+Creatae a launch template
+
+STEP 5: Create a Auto Scaling group 
+-----------------------------------------------------------
+Console path: 
+EC2 -> Autoscaling Group -> Create auto scaling group 
+
+Setting : 
+*Name : phase5-asg
+*Launch template : phase5-lt
+
+Network: 
+*VPC : Default 
+*Subnets: choose 2 Availabitity zones
+
+Load balancing : 
+*Attach to an existing load balancer
+*choose phase5-tg
+
+Group size:
+*Desired size : ;2
+*Minimum: 1
+*Maximum: 3
+
+Create ASG
+
+STEP 5: Wait and Verify 
+-------------------------------------------------------
+
+check :
+*EC2 -> instances  -> 2 instances running
+*Target group -> Healthy 
+*Load balancer -> Active
+
+STEP 6: Test
+-------------------------------------------------------
+Open browser:
+>> http://<ALB-DNS-NAME>
+
+You should see :
+Phase 4 works 
+
+Refresh multiple times - Traffic is load balanced
+
+STEP 7 : Kill the instance 
+-------------------------------------------------------
+1.Ec2 -> Terminate one instance
+2.Wait 2-3 minute
+
+ASG will: '*Launch new ec2
+           *Register it 
+           *Keep app alive 
+No downtime 
+
+
+
+
+
