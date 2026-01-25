@@ -1,0 +1,40 @@
+Launch template
+----------------------
+A launch template is a reusable  blueprint that defines how to launch an Ec2 instance 
+It contains all the configuration details needed to start the Ec2 ,except the actual  subnet/ Az
+
+A launch template will contain: 
+*AMI ID
+*Instance  type 
+*Key pair
+*Network configuration will be given later during the creation of the instance
+*Storage can be spcecified and the instance created will come with this volume unless we add them additionally 
+
+Auto scaling group will use the launch template to create instance automatically 
+
+Application load balancer 
+--------------------------
+ALB is an AWS managed service that distribute incoming traffic to multiple EC2 instances 
+It sits in front of your service and routes requests intelligently 
+
+
+Why we need it : 
+Because   if you have multiple Ec2 instance ,you don't want user to : 
+*directly connect to each Ec2
+*Manage IP'S manually 
+*Lose services when one instane fails 
+
+ALB solves all of this
+
+Key features :
+*Load balancing  -> it distribute the traffic among all the ec2 so that it wil not be a burden on one ec2
+*High availability -> alb works across multiple availability zones
+*Health check's -> it automatically checks wheather the instance is healthy to receive the data or not 
+*Path based routing ->  ALB allows path based routing 
+Ex: 
+/api -> Ec2 group 1
+/blog -> Ec2 group 2
+
+This  is usefull for microservices 
+*HTTPS / SSL termination 
+*
