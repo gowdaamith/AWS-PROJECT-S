@@ -1,0 +1,21 @@
+Dynamic Scaling policies  ->  The instance will be increased based on the currnet situvation of the instance
+Predictive Scaling policies -> Based on the previouse data form the CW [from upto 14 days]  AWS predicts the future data and scales the data
+Scheduled Scaling polices -> You manually tell the AWS when to scale 
+
+Spot Instances : A spot instance is unused Ec2 capacity that AWS sells at a huge discount (upto 90),but AWS can take back         
+                 any time with a 2 minute interruption notice
+
+On Demand Instance : Pay per second /per hour ,no commitment ,start or stop 
+                     No Upfront cost ,interruption ,full flexibility 
+Reserved Instances : Commit for 1 year or 3 years and Get upto 75% of disccount 
+                    Standard RI – max discount, less flexible
+                    Convertible RI – less discount, more flexibility
+
+Saving Plans[modern replacement of RI] : Commit to spend $/hour ,not a specific instance and more flexible 
+                                          * Compute saving plan (most flexible)
+                                          * Ec2 instance saving plan (specific family )
+
+Dedicaated hosts:  Physical server fully dedicated to you  ,you control instance placement
+Dedicated instances: Instance run on dedicated hardware ,but you don't control the host 
+
+
