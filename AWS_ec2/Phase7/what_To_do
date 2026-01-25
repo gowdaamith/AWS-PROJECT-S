@@ -1,0 +1,84 @@
+Step 1: Update your applicatoin 
+---------------------------------------------
+*SSH into any one Ec2 
+
+Example : 
+>> sudo vim /usr/share/nginx/html/index.html
+
+change the content : 
+<h1> changing the content </h1>
+
+Save and exits 
+>> This instance represent v2 of your app 
+
+Step 2: Create a NEW AMI (immutable rule )
+----------------------------------------------
+Create a new image from the changed Ec2 
+>> Name it : [Ex: phase7-nginx-v2]
+create a image
+
+Step 3: Create NEW launch template version console path 
+----------------------------------------------------------
+Console Path:
+Ec2 -> Launch templates -> Select your template -> Actions -> modify template(create a new version )
+Now the  we are inside the configuration of the launch template  -> here we just need to change the 
+ami image from the old version  to the new version 
+
+Do not modify the old version  this is critical 
+
+Step 4: Tell the ASG to use the new version 
+-------------------------------------------------------
+Go to the EC2 -> AutoScallingGroup -> Select the ASG -> Edit 
+
+Under : 
+Launch template 
+ *Version : latest  (or explicitly choose v2)
+
+This doesn't instantly kill old instance 
+
+Step 5 : Configure instance Refresh 
+----------------------------------------------------------
+Inside the ASG : 
+Auto scaling group -> Instance refresh -> start instance refresh 
+
+Setting minimum health percentage : 50%
+Instance warm-up : 300 sec
+Skip machine instance : unchecked 
+
+Start refresh :
+
+What happens internally: 
+
+ASG launches new innstance (v2)
+             |
+Register to Target group 
+             |
+ALB health checks 
+              |
+Traffic shifts to new instance
+               |
+Old instances are terminated
+               |
+Repeat 
+
+Step 6: Verify 
+------------------------------------------------------------
+1.Open ALB  DNS in browser 
+2.Refresh multiple times
+3.You'll see:
+  *Old version briefly 
+  *Then only version 2
+
+Also : 
+*ASG Activity tab shows progress
+*Target group show fixed mixed instances during rollout
+
+
+____________________________________________________________________________________________________________
+
+When you "modify " the lauch template only to create a new version 
+Nothing changes automatically because AWS protects  running systems  by desing
+Only when the ASG  is told to use the  new version do new instance change 
+
+
+
