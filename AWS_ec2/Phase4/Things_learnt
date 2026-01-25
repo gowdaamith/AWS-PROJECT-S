@@ -29,5 +29,19 @@ Purpose :
 use the command to check where the instance configuratioon like a website is reachable or not by using :
 >> curl localhost
 
-if you add storage agian in the storage section while creating the ec2 from the ami this will add up to the 
-ami strage for example [ 8+ 8] .But you should format it  to use it 
+while creating an instance from the AMI in the storage section the volume must be same  ro more than the volume 
+of the snapshot .if its small then instance creation will be not possible if its large then the current filesystem 
+will expand to that volume 
+
+
+Scenario recap
+AMI snapshot size = 8 GB
+You set root volume size = 10 GB
+
+What you get
+Final root volume size = 10 GB
+Snapshot data is restored inside that 10 GB
+
+Not added on top
+
+❌ 8 GB + 10 GB = 18 GB → does NOT happen
