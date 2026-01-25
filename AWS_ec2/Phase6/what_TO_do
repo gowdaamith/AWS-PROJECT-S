@@ -1,0 +1,76 @@
+STEP 1: Open Your Auto Scaling Group 
+-----------------------------------------
+Ec2 -> Autoscaling Group -> Click your ASG and select it
+
+YOu will see options like Automatic Scaling 
+
+STEP 2: Go to the "AUTOMATIC SCALING" TAB
+-------------------------------------------
+You'll see option's like
+*Dynamic scaling policy 
+*Predictive scaling policy
+*Scheduling policy 
+
+Click on create Dynamic scaling policy :
+
+STEP 3: Choose policy type 
+--------------------------------------------
+You will see 3 Optoinss  like this : 
+1. Target tarcking scaling               keep this metric around  X value if grater add instance or if less remove instance 
+2. Step scaling                          You define the range of actions then scale accordingly    
+3. Simple Scaling                        If the cpu > 80 add 1 instance
+
+We will choose the 1 option  as AWS manages the Alaram for us
+
+STEP 4: Configure the Scaling metirc
+--------------------------------------------
+In the UI you'll seee:
+Metirc type choose : 
+  >> Average CPU utilization 
+Set a target value : [ex: 80]
+Set the instance warmup : [ex:80]    # means ASG waits before judging a new instance which prevent overscaling 
+
+STEP 6: Save the Scaling Policy 
+---------------------------------------------
+Click :
+   Create
+
+STEP 7: TEST it 
+----------------------------------------------
+Generate a load 
+
+SSH into one Ec2 and run the following command :
+>> sudo apt update
+>> sudo apt install stress 
+>> stress --cpu 2
+
+STEP 8: SCALE IN 
+--------------------------------------------
+Stop the Stress command .
+
+After a few minutes :
+*CPU drops 
+*ASG reduces Desired capacity 
+*Ec2 terminates automatically 
+
+No click required 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
