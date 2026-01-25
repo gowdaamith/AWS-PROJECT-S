@@ -1,0 +1,17 @@
+Until now :
+We have understood that ASG can kill or createa a instance
+Application Load Balancer can route the trafffic
+
+But nothing is automatic yet
+
+Here we are going to
+*Automatically scale up the instance
+*Scale down the instance
+*You'll understand who trigger what and why 
+
+CloudWatch Watches -> ASG decides -> Ec2 count changes -> ALB adapts
+
+We are using :
+CloudWatch  -> To measure load
+Scaling policy -> Rules that tells ASG when to scale
+ALB  metrics  ->Traffic based scaling 
