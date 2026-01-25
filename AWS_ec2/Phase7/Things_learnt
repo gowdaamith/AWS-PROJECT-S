@@ -1,0 +1,67 @@
+When you "modify " the lauch template only to create a new version 
+Nothing changes automatically because AWS protects  running systems  by desing
+Only when the ASG  is told to use the  new version do new instance change 
+
+Instance refresh is how a auto scaling group safely replaces OLD Ec2 instances with new one created from the 
+Updated launch template -without downtime or without terminating current running instances
+
+When you clikc on Instance refresh : 
+
+ASG -> Instance refresh ->Start instance refresh 
+
+AWS does this cycle ,again and again ,unitl all instances are reaplaced 
+1️⃣ Launch NEW instance (using NEW launch template version)
+2️⃣ Wait for it to become healthy
+3️⃣ Register it with Target Group
+4️⃣ ALB starts sending traffic
+5️⃣ Terminate ONE old instance
+6️⃣ Repeat
+Traffic never stops 
+
+While doing the instance refresh we will come across 3 options:
+1.What percentage of instances must stay running and healthy All time .This ensure that the percentage of the 
+  total number of instances never go below this percent while refreshing the instances 
+
+2.Instance warmUP : How long the AWS  wait  before assuming the new instance is ready to handle the traffic  
+During this warmup time  the instance is excluded from scaling decision  and the cpu usage of the instance 
+will not be included in the scaling work and termination work 
+
+3.Skip  matching instances: if an existing instance already matches the template - I'll skip it 
+
+When unchecked  it will do : 
+*Full replacement 
+*Fresh instances
+*clean lifecycle 
+
+
+if you check this :
+*Some old instances may survive
+*Mixed fleet  = confusion 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
