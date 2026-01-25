@@ -1,0 +1,20 @@
+Here we are learning 
+*Deploy a new app version 
+*Without stopping the traffic 
+*Without breaking scaling
+*wihtout touching runnnig instance 
+
+This is called as immutable + rolling deployment 
+
+Create a new AMI -> updates  launch template version -> ASG replace instances globally 
+
+Services Involved : 
+
+Services                                 Role 
+
+AMI                            Application version 
+LaunchTemplate                 points to AMI
+Target Group                   Health-checks  new instances 
+ALB                            Keeps traffic flowing 
+
+
