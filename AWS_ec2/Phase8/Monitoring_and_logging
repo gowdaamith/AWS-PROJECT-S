@@ -1,0 +1,162 @@
+Goal : YOu should get metrics ,alaram ,email alerts and logs for your Ec2 (via ASG)
+
+Step 1: Pre-check 
+----------------------------------------------
+Make sure : 
+*Ec2 is running via Auto scaling group 
+*Instance has a IAM role attached to it 
+           >> CloudWatchAgentServerrPolicy 
+*Instance is reachable (SSH WORKS)
+
+If IAM  role is missing  -> logs will not work 
+
+
+Step 2: Enable Detailed Monitoring 
+-----------------------------------------------
+This sends Ec2 metrics every 1 minute instead of 5
+
+TOo set this up : 
+1.Ec2 -> Instances
+2.Select one instance
+3.Actions -> Monitor  and troubleshoot
+4.Managed deatiled monitoring 
+5.Enable and save 
+
+Step 2: Verify Metrics in CloudWatch 
+------------------------------------------------
+1.CloudWatch -> Metircs 
+2.EC2 -> Per-instance metrics
+3.Select 
+  *CPU utilization 
+4.Choose your instance
+If the graph appear  -> Metircs is ok 
+
+Step 3 : Create CPU Alarm
+--------------------------------------------------
+ Goal :Send alert if CPU is high
+
+Steps: 
+1.CloudWatch -> Alarms
+2.Create alarm 
+3.Select the metric:
+   Ec2 -> PerInstance Metircs - > CPUutilization 
+4.Condition: 
+   Threshold type : Static
+   CPU > 70
+   For 2 datapoints within 5 minute 
+
+Click next 
+
+
+Step 4: Configure the Action's
+--------------------------------------------------
+Here you will combine the alarm with the SNS
+Here you will get three optionns: 
+1.In alram
+2.ok 
+3.insufficient data 
+
+So ,here we are selecting the first option
+
+
+Send the notification to the following SNS topic 
+--------------------------------------------------
+Here You can selct 
+1.The exiting SNS topic
+2.Create a new topic
+3.Use topic ARN to notify other accounts
+
+then there will be other aptoins  like 
+1.lambda action 
+2.Auto scaling action
+3.Ec2 action 
+4.System manager action 
+5.Investigation action you can choose any one of this and configure them 
+
+
+Next Click on the create 
+
+Step 6: Test the Alaram
+---------------------------------------------------
+SSH into the Ec2:
+
+do these things to create the stress:
+ >> sudo apt update
+ >> sudo apt install -y stress
+ >> stress --cpu 2 --timeout 300
+
+This causes the CPU  to spike and makes the  Alaram go off and you will receive the Email
+
+Step 8 : Install the cloudWatch Agent :
+----------------------------------------------------
+To configure the cloud watch agent first you must have this policy attached to your instance:
+>> CloudwatchAgentServerPolicy 
+if not : 
+*logs will not appear
+*Metircs push will fail silently 
+
+>> sudo apt update
+
+Download the cloudwatch Agent 
+>> wget https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb
+
+Install the packages 
+>> sudo dpkg -i amazon-cloudwatch-agent.deb
+
+If you see dependency errors ,fix them: 
+>> sudo apt --fix-broken install -y
+
+Verify the installation :
+>> /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a status
+
+
+
+Step  9: Create a sample app log 
+----------------------------------------------------
+>> sudo mkdir -p /var/log/myapp
+>> echo "app started successfully " |  sudo tee -a /var/log/myapp/app.log
+
+Step 10: Configure the cloudwatch agent 
+----------------------------------------------------
+Run wizard : 
+>> sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-config-wizard
+
+Then you will see lot's of option: 
+Choose which ever you want 
+
+Then :
+>> sudo systemctl start amazon-cloudwatch-agent
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
