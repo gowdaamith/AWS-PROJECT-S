@@ -1,0 +1,17 @@
+Goal: 
+Pause the newly launched instance before it start serving traffic ,so you can : 
+*installs software 
+*run script 
+*wait for dependencies 
+*then allow it into sevice 
+
+
+This happens inside the ASG  ,not manually 
+
+With Lifecycle Hook : 
+ASG launches instance
+→ Instance = Pending:Wait  ⏸️
+→ (You do setup / bootstrap)
+→ You signal "continue"
+→ Instance = InService ✅
+
