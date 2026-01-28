@@ -1,0 +1,43 @@
+Goal : 
+Secure your Ec2 Environment and control who can do what 
+
+Features Explored :
+1.IAM Role for Ec2
+*Grant Ec2 instances permission without embedding credentials
+*Exmple : Allow an instance to read/write S3 ,or access CloudWatch metircs
+
+2.Security Group and Network ACL'S
+*Fine-grained control of inbound / outbound traffic
+
+3.Key Pair 
+*Secure SSH access without password
+
+4.Security Management 
+*Use AWS secret manager or SSM parameter for credentials or sensitive  config 
+
+Tasks : 
+1.Attach an IAM role to an Ec2 Instance 
+ *Create a role .Ex : ec2-s3-readonly-role
+*Attach policis like : AmazonS3ReadonlyAccess
+
+Verify via : seeing the instance metadata throught this data:
+      1.Get the token
+        TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" \
+             -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
+
+
+      2.Access IAM role metadata with the token 
+        curl -H "X-aws-ec2-metadata-token: $TOKEN" \
+             http://169.254.169.254/latest/meta-data/iam/security-credentials/
+
+2.Configure the Security group 
+*Allow only the required traffic 
+3.Test the IAM role permission from the instances
+  *By running the AWS CLI commmands 
+4.Implement the key Pair  best practive 
+  *Never share the pem key with anyone 
+  *Rotate keys if needed
+5.Optional : integrate SSM
+  *Connect to your instance via AWS system manager without opening the SSH Port 
+
+  
