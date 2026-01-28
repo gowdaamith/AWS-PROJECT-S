@@ -1,0 +1,92 @@
+Goal : Reduce Ec2 Cost without breaking availability
+-------------------------------------------------------
+
+We do this using 
+*Spot instance 
+*Auto Scaling 
+*Smart defaults
+
+What spot instace Really means 
+*Spot instances = unused AWS capacity 
+*Much Cheaper (up  to 90%)
+*AWS  can take them back anytime 
+
+That'w why spot is NEVER used ALONE 
+It is ALWAYS used in Auto Scaling 
+________________________________________________________________________________________________________________
+Where you configure the Spot
+We can configure spot instance while configuring the Laucnch template 
+In the advanced section of the Ec2's Advanced  section 
+
+If you configure it here ASG will launch the spot instance's
+ASG cannot ignore it 
+
+What  happens when the spot instance gets terminated??
+Step by step reality :[Example]
+1.ASG needs  2 instances
+2.It launches 2 spot instances
+3.AWS reclaims 1 spot instances
+4.ASG detects 
+     Desired capacity is not met
+5.ASG immediately tries to launch a replacement 
+
+What if there is no Spot capacity available ??
+There are two cases for this :
+
+
+Case 1: Only spot instances 
+*This is a bad desing
+*AWS  cannot launch instances
+*ASG keeps retrying 
+*YOur app may go down 
+
+Case 2: Mixed Instances Policy
+ASG is configured like this 
+*Base capacity -> On demand
+*Extra capacity -> Spot 
+
+
+Example : 
+*Desired = 4
+*On -Demand = 1
+*Spot = 3
+
+
+Now IF the Spot is unavailable  -> On Demand fills the Gap and the app's keeps running 
+This is the real-world architecuture
+
+
+What if we don't setup the spot Instance options 
+
+You will see options like : 
+*Maximnum price
+*Request type
+*Expiry date
+*Interruption behaviour
+
+
+Maximum price
+*AWS now auto-bids up to On-Demand price
+*Setting lower price = more failures
+*Default = safest
+
+Request type
+Auto Scaling manages lifecycle
+Manual [ Persistent ]Spot requests conflict with ASG
+
+Expiry date
+ASG needs instances indefinitely
+Expiry makes no sense here
+
+Interruption behavior
+ASG already handles termination + replacement
+Custom behavior not needed
+
+👉 Default is best for ASG
+
+
+
+
+
+
+
