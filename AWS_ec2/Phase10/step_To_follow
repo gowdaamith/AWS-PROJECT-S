@@ -1,0 +1,85 @@
+Step 1: Create an IAM Role for your Ec2
+-----------------------------------------
+1.Go to the IAM -> Roles  -> Create Role
+2.Choose the AWS service  -> Ec2
+3.Attach a policy .EX:  AmazonReadOnlyPolicy
+4.Give the Role a name
+5.Finish creating the role
+
+Step 2: Attach the Role to your Ec2 Instance
+--------------------------------------------
+1.Go to the Ec2 dashboard -> Go to the Instance section ->  Select the instance to which you want to add the role 
+-> Action's  -> Security  -> Modify IAM role 
+2.Choose the role YOu created to add 
+3.Save 
+
+Step 3: Verify the IMDSv2 if not enabled 
+--------------------------------------------
+ *This will be autoenabled in most of the instances
+
+ Step 4: Security Group 
+ ------------------------------------------
+ *Allow only nessary port :
+   - SSH (22) -> YOUR IP only 
+   - HTTP (80) -> anywhere (fi web server)
+  
+ Step 5: Test the AWS the permission through the instance terminal by the use of the AWS cli
+ ------------------------------------------------------------------------------------------
+* Install the AWS CLI 
+ And run this command : 
+  >> aws s3 ls 
+  Should list buckets without using any local credentials, because your EC2 is using the IAM role credentials automatically
+
+  Step  6:Rotate SSH keys on an Ec2 Instance
+  -------------------------------------------------------------------------------------------
+  SSH key rotation  means replacing the old key pair with new one so that you can revoke the old key without 
+  lossing the access
+
+  This involve logging into the instance with already existing  file and creating a new keys
+  and add the newly created key to the ec2 [vim ~/.ssh/authorized_keys]
+  Then check the connection if the connection is success then remove the old key 
+  This is how it work 
+
+  If your working with ASG the edit the template and apply it and do the instance refresh 
+
+  Step 7: Integrating with the AWS system Manager(SSM) for access
+  -------------------------------------------------------------------------------------------
+  SSM allows  you to connect to Ec2 instances without SSH or opening port 22 ,securly via the AWS console 
+  To allow this to happen  follow these things 
+
+   Step 1: Attach the SSM IAM ROLE
+   -----------------------------------
+   1.Go to the IAM  -> Roles  -> Create Role 
+   2.Select the AWs service  -> Ec2
+   3. Attach the  policy  AmazonSSMManagedInstanceCore 
+   4.Name the role [Ex= ec2-ssm-role]
+
+  Next :
+  Attach SSM IAM ROLE to the instance
+  *Go to Ec2 -> Instances  ->Actions -> Security -> Modify IAM Instances
+  *Attach the ec2-ssm-role
+
+  Next: 
+  Install SSM Agent (if not already installed)
+  >> sudo apt install amazon-ssm-agent --classic 
+  >> sudo  systemctl enable --now apt.amazon-ssm-agent.amazon-ssm-agent.service
+
+  Confirm it's running or not :
+
+  >> sudo systemctl status apt.amazon-ssm-agent.amazon-ssm-agent.service
+
+   Next:
+   Connect via AWS console:
+  1.Go to System Manager  ->Session Manager  ->Start the session 
+  2.Select your instance -> Start the session 
+  3.You now have shell access to the ec2 without the SSH keys or opening any port
+
+  Advantages of the SSM:
+  *No need for SSH keys  -> Reduced risk of compromised keys
+  *Works even if instances has no public ip
+  *Full logging with Cloudwatch or S3
+  *Easy for ASG's or Multiple instances 
+
+  These all the things you can do 
+  
+  
