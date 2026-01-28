@@ -1,0 +1,86 @@
+Step 1: Go to Auto Scaling Group 
+-------------------------------------
+*Ec2 Console  -> Auto  scaling  Groups
+*Select your ASG
+
+Step 2: Create a Lifecycle Hook 
+----------------------------------------
+At the top of the ASG page ,click 
+
+Instance management 
+
+Step 3: Go to the Lifecycle hooks
+---------------------------------------
+*In the Instance management which appear's when you select the instance 
+*Scroll down and go to the Lifecycle hook section 
+
+Step 4: Creating a Lifecylchook 
+----------------------------------------
+*Click on the create lifecycle hook 
+* Give the name  : 
+*LifeCycle Transition : Select either the instance launch or termination 
+*Heartbaet (time the ec2 will wait) 
+*Default result : you can either choose the CONTINURE or ABUNDUNE 
+*leave th notification target empty 
+Click create 
+
+_________________________________________________________________________________________________________________
+
+Warm Pool Instances??
+
+A WARM POOL  instances is a set of pre-launched  Ec2 Instances that are NOT serving traffic ,but are ready to be used 
+instantly 
+    "Think of it as a Instances waiting on the bench ,already warmed up to sever the traffic"
+
+
+Why WARM POOL instances exits??
+Normally ,when ASG  scales out :
+Launch EC2 (1–2 min)
+OS boots
+User data runs
+App starts
+Health checks pass
+Instance becomes InService
+
+⏱️ Total: 3–10 minutes
+
+
+What Warm Pool fixes ??
+With a warm pool: 
+Instances are already created
+OS is already booted
+App may already be installed
+Only final steps are needed
+
+⏱️ Scale-out time: seconds
+
+
+Warm Poool  configuration :
+
+Warm pool state :   
+There will be three state : 
+-Running 
+-Stopped 
+-Hibernate 
+
+Minimum instances :    [ Always keep atleast this many instances ready 
+                         Even if no scaling happens  ASG will keep 1 warm instance ]
+
+Instance reuse on Scalne in:
+
+When ASG scales IN
+Instead of terminating instance
+It moves it into Warm Pool
+
+
+Warm Pool Size :
+Default specification :
+Warm Pool Size = Max capacity - Desired capacity 
+
+Custom Specification : 
+Warm Pool Size = Custom number  - Desired capacity   [ never let the warm pool size go below it ]
+
+
+
+
+
