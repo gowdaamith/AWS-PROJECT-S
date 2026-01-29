@@ -1,0 +1,13 @@
+Step 1: Creating the S3 bucket
+---------------------------------
+1.Go to the AWS console  -> S3 bucket ->  Create bucket
+
+2.Bucket setting 
+Setting                        value 
+
+Bucket  name                  amith-s3-static-site [ must be glbally unique ]
+Region                        Same as your Ec2 Region 
+Object ownership              ACL'S disabled
+Block Public Access           Uncheck ALL
+
+3.Click on create bucket
