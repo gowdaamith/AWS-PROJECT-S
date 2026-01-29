@@ -1,13 +1,72 @@
-Step 1: Creating the S3 bucket
----------------------------------
-1.Go to the AWS console  -> S3 bucket ->  Create bucket
+Step 1: Create an S3 bucket 
+-------------------------------
+1.Go to the AWS console  -> S3 -> Create a bucket
+2.Bucket Configuration :
 
-2.Bucket setting 
-Setting                        value 
+bucket region -> ap-south-1
+bucket type   -> General purpose 
+bucket name   ->amith-s3-static-site
+Object ownership -> ACL's disabled
+Block all public ip -> Uncheck 
 
-Bucket  name                  amith-s3-static-site [ must be glbally unique ]
-Region                        Same as your Ec2 Region 
-Object ownership              ACL'S disabled
-Block Public Access           Uncheck ALL
+create the bucket 
 
-3.Click on create bucket
+Step 2: Enable Static Website hosting 
+--------------------------------------
+1.Open your bucket 
+2.Go to the properties  tab
+3.Scroll -> Static website hosting 
+4.Enable it 
+
+Settings:
+*Hosting type : Host a static website 
+*Index documents : index.html
+*Error document  : error.html 
+
+Save 
+This tell the S3 server file like a Website ,not just like a storage 
+
+
+Step 3: Create a website files 
+------------------------------------------
+Create the files [index.html and error.html ] locally and upload to the s3 
+Keep the other setting default 
+
+Step 4: Make Objects public 
+-----------------------------------------
+Right now your site will NOT load
+This is intentional  - Security first
+
+Add the bucket policy : 
+1.Go to the Permission tab
+2.Scroll to bucket policy 
+3.Paste this 
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "PublicReadGetObject",
+      "Effect": "Allow",
+      "Principal": "*",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::amith-s3-static-site/*"
+    }
+  ]
+}
+
+Step 5: Access your Website 
+----------------------------------------------
+1.Go to Properties
+2.Scroll to Static website hosting 
+3.Copy the bucket website endpoint 
+4.Paste it on the browser and access it 
+
+Step 6: Enable versioning 
+----------------------------------------------
+1.Go to the properties 
+2.Enable bucket versioning 
+3.Upload a new index.html  -> see version 
+
+
+
+
