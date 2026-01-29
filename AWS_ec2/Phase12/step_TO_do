@@ -1,0 +1,78 @@
+Step 1: Enable the EBS Snapshots
+-------------------------------------
+First you will be give with tree option's:
+- Start with a template          ---->  AWS configured template
+- Build a new plan               ---->  You configure everything  
+- Define a plan using JSON       ---->  Define plan using Json 
+
+Backup plan name: [EX: ebs-daily-backup-7days ]
+
+Backup rule Configuration : 
+ Backup rule name = backup-rule-volume-retention
+
+ Backup vault: Defaul  
+ Logically air-gapped vault[optional]
+   - features 
+      - Cannot be deleteed easily 
+      - Protected from ransomeware
+      - Even root user can't instantly delete backkup's
+  Used in production 
+  
+
+ Backup Frequency (When the backup run)
+----------------------------------------------
+*Daily [backup runs daily  and Incremental for EBS]
+other options are : 
+*Hourly 
+*Weekly
+*Monthly 
+
+
+Backup window 
+------------------------------------------------
+*Start time
+-Back start time   
+*Start within 
+- if the backup doesn't start at start  time it must be restarted within the start within time from the start time
+*Complete within 
+-Backing up must finish within this day (useful for the very large instances)
+
+Poin-in time recovery [ continuous change recording ,not periodic snapshots  ]
+   This means : Instead of taking backup once per day AWS records every changes as it happen 
+               Internally : first it will take the backup of the entire thing then it will  update the backup with every update 
+               So the if we want to go back in the time ,we can do 
+
+
+Lifecyle : 
+Cold storage : 
+-Move old backups to  cheaper storage 
+- The requirement must atleast should be 90 days  not supported for all ther sevices
+
+If you choose the cold storage you have the option to choose for how much time the backup will stay in the warm volume
+
+Total retenttion Period : for how much time the  backup should be kept 
+
+Backup Indexes: [optional ]
+- Only for the EBS/S3 indexes
+- Allow for faster search and metadata Queries 
+
+Copy to the destination : 
+- This is used for the diaster management   and allow you to make a copy of  your current backup to a another location 
+
+Malware protection: [ you can also enable or disable the malware protection ]
+
+Application-consistent backup
+Enable application-consistent snapshots for applications that support VSS. Prerequisites required. Prerequisites required. 
+Windows VSS [Enable or disable ]
+ - This prevent the application form  writing into the volme while taking the snapshot 
+
+ S3 backup setting : 
+ - backup  ACL's
+ - Back up objects tags
+
+ These all the thing you should configure int the AWS  backup 
+_____________________________________________________________________________________________________________________________
+
+This is how you create a volume backup 
+
+
