@@ -1,0 +1,13 @@
+Goal : Understand core S3 and Permissionn 
+
+What you will build ??
+>> Host a static website using the S3
+
+features  covered 
+*Bucket and object
+*Folder strucuture 
+*Public access block
+*Bucket policy 
+*Static website hosting 
+*Object URL's
+*Versioning 
