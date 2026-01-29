@@ -1,0 +1,52 @@
+Step 1: Creating the S3 bucket
+---------------------------------
+1.Go to the AWS console  -> S3 bucket ->  Create bucket
+
+*AWS region -> will be taken as per your current place
+  - Data will be replicated across multiple AZ's  in this region 
+  - Choose the region closer to you or the customer so you will get (Best latency and cheapest for you )
+
+*Bucket type -> General purpose   -> Strandard S3 bucket ,multi-AZ ,Support all storage class
+              |_Directory         -> Single AZ, Ultra-low latency , Higher cost
+
+*Bucket Name -> Global name ,used in URL's and API'S 
+              |_ No lowercasee,no space ,cannot change later 
+
+*Copie the setting from the existing bucket  : [Only the configuration not the data ]
+
+*Object ownership 
+  - ACL's disable  -> YOur account own's all objects and permission via IAM and bucket policies
+  - ACzL's enabled -> Objects in thiis bucket can be owned by other AWS account .Access to this bucket and its 
+                      objects can be spcificed using ACL's 
+                       if you enable this you will be given two options  will pop up 
+                       - Bucker owner preffereed  -> If new objects written to this bucket specify the bucket-owner-full-control canned ACL, they are owned by the bucket owner. Otherwise, they are owned by the object writer.
+                       - Object writer  -> the object writer remains the object owner
+*Block the public access setting to this bucket ->
+  - Here you can directly block all public access 
+                      or 
+  - allow  some access throught the polices 
+
+
+  Bucker versioning :
+                     |_ disable it -> Only the latest version is stored, delete = gone 
+                      |_ enable it  -> Keeps all version's  ,protects against overwrite and delete
+                                        - Required for the Object lock and S3 backup and PITR
+                                         - Increase the storage cost 
+
+Tags :
+Meaning : key - value metadata for cost tracking ,Organizatoin ,Automation 
+
+Default encryption : 
+ - The Encryption applies automatically to all new objects
+    SSE-S3 (Amazon S3 managed keys)  - free
+    SSE-KMS                           - uses AWS KMS keys  and Extra cost
+    DSSE-KMS                          - Dual encryption ,higher security and higher cost
+
+  Bucket key (Only for SSE KMS)
+  -------------------------------
+  Reduces KMS call's  -> lower cost
+Object Lock
+Store objects using a write-once-read-many (WORM) model to help you prevent objects from being deleted or overwritten for a fixed amount of time or indefinitely. Object Lock works only in versioned buckets
+  
+
+        
