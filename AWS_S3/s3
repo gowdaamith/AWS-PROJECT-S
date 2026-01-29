@@ -48,5 +48,146 @@ Default encryption :
 Object Lock
 Store objects using a write-once-read-many (WORM) model to help you prevent objects from being deleted or overwritten for a fixed amount of time or indefinitely. Object Lock works only in versioned buckets
   
+METADATA : 
+This feature lets S3 automatically create a database-like  view of your buket content 
+
+Helps to 
+*Track every object
+*Track every changes 
+*Stores that info as queryable table .So you can query with SQL 
+
+What happens is ??
+AWS creates managed metadata tabels behind the scenes:
+*Stored in another AWS-managed S3 bucket
+*Format : Apache Iceberg
+*Continuously update ,You do NOT need to manage these tabels manually 
+
+
+Metadata configuration :
+Once enabled :
+*Every upload / delete / overwrite is tracked 
+*Metadata tabels auto-update
+
+What can you do with it :
+*You can Run SQL queries using : 
+  - Amazon Athena 
+  - Qucick sight 
+  - Apache spark 
+
+Ex:
+SELECT * FROM bucket_metadata
+WHERE size > 100MB
+AND last_modified > now() - 7 days;
+
+Types of metadata : 
+
+1.Journal Tabel
+-----------------------
+What it stores: 
+*Object changes over time 
+*Upload 
+*Deletes 
+*UPdates
+
+Use cases:
+*Auditing 
+*Security 
+*Compliance
+*Who changed what and when 
+
+Think of it like a cloudTrial of the S3 objects
+
+Record expiration : 
+*Disable : History is kept forever 
+*Enable  : auto delete old records (cheaper )
+
+2.Live inventory Tabel 
+-------------------------------
+What it stores
+*Current state of ALL objects
+*One row per object
+
+Use cases: 
+*Big data jobs
+*ML pipelines
+*Batch processing 
+*Finding files quickly
+
+Think of it like a :
+>> ls -l for your bucket  - but instant and queryable
+
+Keep the encryption default unless the job needs strict security and compliance
+
+______________________________________________________________________________________________________________
+ACCESS POINT :
+An S3 Access point is an separate ,named way to access an S3 bucket with its own permission and network rules \
+Used for API access such as (CLI/SDK/backend apps)
+It not for the static website
+
+
+It doesn't store the data 
+It Controls  how the data is accessed 
+
+Normal bucket access: 
+---------------------------------
+ App / User
+    |
+ S3 bucket
+
+*Only bucket policy 
+*One big set of permission 
+*Hard to manage  when many app's / users exits
+
+Bucket access with Access point 
+--------------------------------
+
+App A → Access Point A → Bucket
+App B → Access Point B → Bucket
+
+*Same bucket 
+*Multiple access point 
+*Each access point  : 
+  - has its own  Access policy 
+  - has its own  Network policy 
+
+Access point configuration :
+1.Give the accesss point a name:   
+2.Network origin 
+  Here you have two options: 
+  - Virtual private cloud ->  You should give the VPC ID   [ No internet access .Request are made over a spcidfied VPC only ]
+  - Internet              ->  The access point has a public endpoint  .Can be accessed from the Intenet ,AWS cli ,SDK's 
+                               -Still not public by default 
+                               - Requires authentication (IAM/ signed request)
+3.Block Public Access Settings 
+You selected ; 
+Block all public access 
+This means : 
+*Nobody can make this access point public
+*Even if someone tries to add:
+-Public ACLs
+-Public policie
+
+Access Point policy (optional)
+-------------------------------------
+This is a JSON policy that controls:
+*Who can access the bucket
+*What they can do
+*ONLY via this access point
+
+Example use cases:
+
+- Read-only access
+- Upload-only access
+- Restrict to one IAM role
+
+If you leave it empty:
+
+*Access is controlled by:
+-IAM permissions
+-Bucket policy
+
+📌 Access is allowed only if BOTH allow it
+______________________________________________________________________________________________________________
+
 
         
