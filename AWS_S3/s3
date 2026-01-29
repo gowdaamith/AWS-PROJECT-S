@@ -187,7 +187,159 @@ If you leave it empty:
 -Bucket policy
 
 📌 Access is allowed only if BOTH allow it
-______________________________________________________________________________________________________________
+_____________________________________________________________________________________________________________
+MANAGEMENT
+-------------
+
+Lifecycle rules
+-----------------
+Lifecycle rules tells the S3 what to do with objects automatically as they get older  
+- move them to cheaper storage or delete them 
+
+LifeCycle rule name:
+---------------------
+Name: Lifecycle rule name
+=> Give the name that suits 
+
+Choose the rule scope :
+This decides which object the rules applies
+
+*Apply to all objects in the buckets
+ - Every file in the bukcet
+ - Simple but dangerous if used carelessly 
+
+*Limit the scope using the filter 
+ -You an target specific target 
+
+Filter type: 
+Prefix:[Ex : logs/,uploads/,temp/]
+Meaning : only the objects whose key start with that prefix
+Ex: 
+- logs/app.logs
+- logs/2026/a.logs
+- images/pic.jpg   -> this will not be included as it doesn't start with any of the prefix
+
+Object tags: 
+----------------
+env = dev
+type  = temp
+
+Meaning object with thesse tags  ,this allow a very precise  control  .Used a lot in production 
+
+Object size:
+-------------------
+*Minimux / Maximum size of the object
+ Useful for :
+  *large backup 
+  *small temp files
+
+Lifecycle rule action : Choose the actions you want this rule to perform 
+
+1.Transition  current version of objects between the storage classes
+   Means : choose the transition to move current version's of objects between storage classes based on your u
+            use case scenario and performance access requirementes .These transitoins start from when the objects
+             are created and ocnsecutively applied 
+ 
+This will ask for a Storage class you want to transition to  and the days after which this data will be  transitioned
+2.Transition non currnet  version's of objects between storage classes [This will applie for non-versioned objects ]
+3.Expire  current version of objects 
+  Means : if the version is enabled  then when the expiration date is reached  
+          1. S3 does not delete the object data
+          2. s3 adds a delete marker 
+          3.The object disappears  form the console, Normal GET , Website access 
+             But 
+                *The actual files become a non-current version 
+                *You are still charged for the storage 
+         Expire the current version and permanently delets the non current version 
+
+          if the versioning is disabled  and the expiration data is reached 
+          1.Object is permanently deleted
+          2.NO delete marker 
+          3.No recover
+          4.No storage cost after deletion 
+This option will ask for the  day's to keep the object from deletion 
+4.Permanently delete noncurrent version of objects
+  Choose when amazon S3 permanently deletes speified non-current  version objects 
+  This will ask for number of days after which the objects become noncurrent and the number of newer version to be retained 
+5.Delete expired objects delets markers or incomplete multipart uploads
+  Delete expired objects delete marker 
+  
+When you enable this: 
+  *S3 automatically removes those useless delete marker
+  *Object metadata is cleaned up 
+  *List the operation become faster
+  *No data loss 
+  
+ Incomplete mutlipart uploads 
+  *While uploading the large file we often split it into part and uplaod  
+  *While uplaoding through parts if the upload fail or interrupted ro abandoned  the corrupted part will stay in the s3 and you will be charged for it
+ But when you  enable this  deletes multipart uploads that have been incomplete for X days
+_________________________________________________________________________________________________________________
+Replication 
+
+S3 replication  = automatic  copying of the objects from one bucket to another 
+It works : 
+*Within the same region  (SRR - Same region replication )
+*Across region           (CRR Cross regio replication )
+
+Whenever an object is : 
+*Uploaded
+*Updated
+*Deleted 
+S3 automatically copies that change to the destination bucket
+** This replication only works when  the versioning is enabled so that its easy to trackt the changes 
+
+Configuring the  Replication Rule screen : 
+1.Replication rule Name :  Give a name for the replication rule
+2.Choose wheather the  rule will be enabled or disabled  when created 
+  Means : Enabled -> replication start's immediately 
+          Disabled -> rule exits but does nothing 
+3.Prioirty:
+  Used only if : 
+  *You have multiple replication rules 
+  *Same object matches more that one rule 
+Lower the number higher the priority 
+ 
+4. The Rule Scope is similar to lifecycle
+5.Destination section : 
+  Where the copy goes:*same account, different account 
+6.IAM role : 
+   Provide  permission to access the spcified resources 
+7.Encryption : Inside this you have the option to 
+               Enable : Replicate objects  encrypted with AWS key management services 
+8.Destination storage class : 
+   Change the storage class of the s3 where the replicated data will be kept 
+9. Additional replication options :
+   Replication Time Control (RTC)
+   - Replication Time Control replicates 99.99% of new objects within 15 minutes and 
+      includes replication metrics. Additional fees will apply. 
+    Delete marker replication
+    - Delete markers created by S3 delete operations will be replicated.
+      Delete markers created by lifecycle rules are not replicated.
+    Replica modification sync
+    - Replicate metadata changes made to replicas from the destination bucket to the source bucket.
+    Replication metrics
+    - With replication metrics, you can monitor the total number and size of objects that are pending replication,
+      and the maximum replication time to the destination Region. 
+      You can also view and diagnose replication failures. CloudWatch metrics fees apply.
 
 
-        
+____________________________________________________________________________________________________________________________
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
