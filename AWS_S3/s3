@@ -326,8 +326,338 @@ Lower the number higher the priority
 
 ____________________________________________________________________________________________________________________________
 
+S3 Inventory 
+--------------
+S3 Inventory  = a periodic  report (CSV/Parquet/ORC) listing objects in your bucket 
+                AWS generates this automatically and drops the report into another S3 bucket
+
+Meaning : "Give me  an Excel sheet of everything inside my bucket "
 
 
+
+Why does this exits????
+--------------------------
+Because : 
+*aws s3 ls is slow  for millionn of objects 
+*YOu can't easily query objects metadata at  scale
+*Enterprises need audit ,cost analysis ,compliance
+
+This S3 inventory gives you all the things about the S3 like:
+Object list,Size,Storage class,Encryption,Replication status,Object Lock info,Ownership,Lifecycle dates
+
+All in one file like a  schedule 
+
+
+Inventory configuration 
+--------------------------------------
+1.Inventory configuration name:  Give a name for this inventory 
+2.Invetory scope only : 
+ - You can limit the scope of this configuration to a single prefix
+      :Write the prefix you want the inventory to look into 
+Object version : 
+- Current version only 
+- Inclued all version 
+3.Destination bucket 
+  - This is where the inventory report  file will be saved . The destination bucket must be  in the same AWS 
+    region as the source bucket
+
+    But there is no restirction on the AWs account it can be stored in other AWS account also 
+    Format : s3://inventory-reports-bucket/reports/
+
+    >> AWS will automatically write the files here 
+
+4.Destination Bucket permission : 
+   >> This policy allows the AWS service to put inventory report files into my bucket 
+5.Frequency: Choose how often the report will be generated 
+   >> Daily  : The first report will be delivered within 48 hours
+   >> Weekly : The first report will be delivered within 48 hour and subseqenrt report's
+               will be delivered on sunday 
+6.Output format: Choose an output format based on the number of objects  that you expect to list or the analysis 
+                  tools that you want to use 
+  >> SUCH AS 
+    *CSV
+    *APACHE ORC
+    *APACHE PARQUET 
+7. Status: Choose wheather the configuration will be enabled to publish invertory reports
+   >> Disable   - config exits but does nothing 
+      Enable    - report start generating
+8.Inventory report encryptoin: Server-side encryption protects the data at rest 
+  >> Options: 
+      - Don't specify an encryption key 
+          --The bucket setting for default encryption are used to encrypt when storing then in Amazon S3 
+      -Specify an encryption key 
+          -- The specified encryption key is used to encrypt objects before storing them in Amazon S3
+9.Additional  metadata fields : This decides what coloums appear in the report
+  Exmple: 
+  *Object size
+  *Last modified
+  *Storage class
+  *Encryption
+  *Replication status
+  *Object Lock info
+  
+More field = Bigger report = more cost 
+
+_______________________________________________________________________________________________________________
+METRICS
+Storage Class analysis 
+-----------------------
+This helps in setting up storage analytics on your S3 bucket 
+You can control which objects are analyzed (Prefix/tags) ,and optionally export daily CSV reports 
+
+Configuration of the Storage class analysis:
+--------------------------------------------
+1.Configuration Name : The name of this configuration [Cann't be changed later]
+2.Configuration scope : This tell the AWS which objects you want to analyze 
+                       >>  Apply to all the objects
+                       >> Limit the scope using filter's such as Prefix ,Object tags , or both
+3.If you choose the second option you should enter the prefix  or the object tags  ro combination of both to 
+  to filter 
+4.Export the CSV: Specify an S3 bucket to store CSV exports .A file will  be exported every 24 hours
+   >> If you enable it then you should give the S3 bucket location 
+   >> If not not need it will be disabled 
+_______________________________________________________________________________________________________________
+PERMISSION 
+
+1.Block Public Access
+----------------------------
+PURPOSE: To prevent  accidental  public exposure of your bucket or objects  
+
+If you enable " Block all public access = ON "
+*Nobody on the internet can access your bucket
+*Even if you write a  bucket policy allowing public access  -> S3 will block it 
+If you disable " Block all public access = OFF "
+*You can allow public access if needed
+
+2.Bucket Policy 
+----------------------------
+This is the main accesss control system in S3
+
+Bucket policy decides : 
+*Who can read the files 
+*Who can write the files
+*Can the public access it 
+*Can the cloudfront access it 
+*Can another AWS account access it 
+
+Bucket policies are powerfull and flexible 
+Bucket policies don't  apply to objects owned by other accouts 
+
+
+3.Object OwnerShip
+------------------------------
+This is the  important setting that controls who owns uploaded objects 
+You saw: 
+Bucket owner enforced : 
+>> A C L   are disabled
+  All the objects in this bucket are owned by this account 
+  Access to this buket and its object is spcified using only policies 
+
+    This removes legacy behaviour where the uploader owned the object 
+
+Why this is good??
+*No permission conflicts
+*No ACL confusion 
+*The bucket owner alwayys has full control 
+
+If the ACL is enabled :
+>>   A C L  is enabled 
+     Objects in this bucket can be owned by other AWS accouts  .
+     Access to this bucket and its objects can be specified using ACL's 
+
+If you enable this there will be two other optoins under the Object ownership :
+>> Bucket ownership prefered  : If someone uploads an object and they include a special ACL [bucker-owner-full control]
+                                the bucker owner will own the object else the object writer own the object 
+    
+>> Object writer              : The object owner become the owner ,ALWAYS 
+
+4.ACL  - Accesss contorl lists (old systems)
+-----------------------------------------------
+ACL existed before bucker policies 
+Since our bucket is bucket owner enfored ,ACL are actually ignored 
+
+Should you use ACL'S ?? NO
+*ACLs are outdated 
+*Use bucket policies instead 
+
+5.CORS (Cross-Origin Resource sharing )
+-------------------------------------------------
+CORS allow the website hosted on one domain to access your S3 bucket
+
+Example  : 
+Your React fronted (example.com) want's t fetch an image from S3
+You  need CORS LIKE: 
+{
+  "AllowedOrigins": ["https://example.com"],
+  "AllowedMethods": ["GET"],
+  "AllowedHeaders": ["*"]
+}
+if you don't set CORS?
+Browsers will block cross domain requests
+
+___________________________________________________________________________________________________________________________
+PROPERTIES
+-----------
+
+1.Bucker Overview:
+----------------
+Gives details about the 
+*AWS region 
+*Amazon Resource Name
+*Creation date
+2.Bucker Versioning 
+------------------------
+- Bucket versioning 
+*Versioning is a means of keeping multiple variants of an object in the same bucket. You can use versioning 
+to preserve, retrieve,and restore every version of every object stored in your Amazon S3 bucket.
+With versioning, you can easily recover from both unintended user actions and application failures
+- Multi-factor authentication(MFA) 
+An additional layer of security that requires multi-factor authentication for changing Bucket Versioning settings
+and permanently deleting object versions. To modify MFA delete settings, use the AWS CLI, AWS SDK,
+or the Amazon S3 REST API.
+3.Static Website Hosting 
+----------------------------
+Static website hosting :Use this bucket to host a static website  or redirect reponses if enabled  
+Hosting type : 
+ -Host a static website
+ -Redirect requests for an object
+If the first option is chooosen  you should upload the two files
+>>Index.html 
+>>Error.html
+Redirection rules: [Optional]:Redirection rules ,written in JSON ,automatically redirect webpage requets for spcific content 
+If you choose the second options you should give the host name
+>> means .target bucket website address or personal domain 
+Protocol :[optional]
+-none
+-http
+-https
+4.Requester Pays 
+------------------------------
+When enabled ,the requester pays for requests and data transfer costs and anonymous access to this bucket
+is disabled
+Requester pays
+Disable
+ >> Bucket owner pays the cost of data requests and downloads from this bucket.
+Enable
+ >> Requester will pay for requests and data transfer. While requester pays is enabled, 
+    anonymous access to this bucket is disabled.
+5.Object Lock
+--------------------------------
+Store object using write-once-read-many (WORM) model to help you prevent objects from being deleted or overwritten 
+for a fixed amount of timeor indefinitely .Object lock works only in versionec buckets 
+
+If enabled you will ssee thesse options
+
+Default retention
+Automatically protect new objects put into this bucket from being deleted or overwritten.
+
+Disable
+Enable    -> Tick
+
+Default retention mode
+Governance
+Users with specific IAM permissions can overwrite or delete protected object versions during the retention period.
+
+Compliance
+No users can overwrite or delete protected object versions during the retention period.
+
+Default retention period.
+Enter a number 
+6.Transfer acceleration
+----------------------------------
+Transfer acceleration : Use an accelerated endpoint for faster data trasfer 
+Transfer acceleration :  if enabled you will get a endpoint 
+7.Amazon EvnetBridge
+-----------------------------------
+Amazon EventBrige is a service that recieves events from many AWS  services (including the S3) and lets
+you route them to other services like 
+*Lambda,SNS,SQS,Step functoins,Ec2
+If you turn this option ON :  S3 will send all buckets event  from creation to deletion ,from 
+replicaton to restoring  to the Event bridge  and the event bridge can trigger the action based on those events
+8.Event Notification : 
+----------------------------
+S3 event notification lets s3 automatically notify another AWS service when something happen in your bucket
+When a file is uploaded → trigger Lambda
+When a file is deleted → send message to SQS
+When object is restored → notify via SNS
+
+Configuration 
+------------------
+Event Name: Name of the Event 
+Prefix    : Limit the notification  to objects with key starting with spcified character
+Suffix    : Limit the notification to Objects with key ending with specified character
+Event type: Specify at least one event for which you want to receive notifications.
+            For each group, you can choose an event type for all events, or
+            you can choose one or more individual events.
+Some of the event type are: 
+*Object creation 
+*Object remomval 
+*Object restored
+*Object ACL
+*Object tagging
+*Reduced Redundancy storage
+*Replicatoin 
+*Lifecycle
+*Intelligent tiering
+
+Destination : 
+Here you choose the destination LIKE Lambda,SNS,SQS  and specify what to do when an event occur 
+9.AWS CloudTrail
+----------------------
+You can view and configure CloudTrail data events for Amazon S3 bucket object-level operations 
+in the AWS CloudTrail console.
+10.Sever logging 
+-----------------------
+it is a feature that tracks every request made to your bucket
+whne enabled ,S3 will record logs for :
+*Who accessed your bucket
+*What operation they performed
+*When they accessed it
+*From what IP address 
+*Whether access was allowed or denied 
+These logs are stored in another S3 bucket  a loggin target bucket
+ Of which you should provide the path and  and log object key format
+11.Intelligent Tirering Archive Configuration 
+----------------------------------------------
+S3 intelligent-tiering automatically moves your objects between tires based on how ofter they are accessed ,
+to save you mony 
+The Archive configuration specifically controls deeper cold tiers
+*Archive  Access tire -> Cheap ,slower
+*Deep Archive Access tire -> Super cheap ,very slow 
+
+Configuration:
+Configuration name:  Enter the configuration name 
+Choose a configuration scope 
+>> Limit the scope of this configuration using one or more filters
+   This configuration applies to all objects in the bucket
+You can also do this by using the : Object tags 
+
+Status :  Help's to choose wheather the configutaion will be enabled or disabled
+
+Archive rule aciton's:
+Intelligent-Tiering can tier down objects to the Archive Access tier, the Deep Archive Access tier, or both. 
+The number of days until transition to the selected tiers can be extended up to a total of 2 years. Learn more 
+
+Archive Access tier
+When enabled, Intelligent-Tiering will automatically move objects that haven't been accessed for a minimum of 90 days to the Archive Access tier.
+Deep Archive Access tier
+When enabled, Intelligent-Tiering will automatically move objects that haven't been accessed for a minimum of 180 days to the Deep Archive Access tier.
+12.Encryption: 
+-------------------------------------
+Server-side encryption is automatically applied to new objects stored in this bucket.
+12.Bucket ABAC
+--------------------------------------
+Attribute-based access control (ABAC) is an authorization strategy that defines permissions based on attributes. 
+With ABAC, you can attach tags to your general purpose buckets and AWS Identity and Access Management (IAM)
+entities (users or roles), then scale access to objects in your S3 general purpose buckets using tag-based policies.
+
+ABAC status
+Disable
+Disabling ABAC blocks the ability to manage access using tags.
+Enable
+Enabling ABAC allows you to manage access to buckets with tags. To manage tags in this bucket, you must have s3:ListTagsForResource, s3:TagResource, and s3:UntagResource permissions.
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 
