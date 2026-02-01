@@ -1,0 +1,60 @@
+Step 1: Create a Private S3 bucket
+----------------------------------------
+The bucket will be created according to the region  your are account is in 
+
+Bucket type : General purpose 
+Bucket name : project2-private-bucket
+Object ownership : ACL'S disabled
+Block Public access setting for this bucket : Tick 
+Bucker versioning: not needed here
+Tags : not needed but can be provided
+Default encryption : Default will be choosed no need of other 
+Object lock : no need of it 
+
+Create a bucket
+
+Step 2: Create an IAM USER for access
+-------------------------------------------
+1.Go to the IAM section  -> User -> Create USER
+2.Name: s3-presign-user
+3.Give the console access
+
+Step 3: Attach the user with the  permission 
+----------------------------------------------------
+We must create a custom policy so that the user only accesses your bucket
+
+Create a policy :
+1.IAM -> Policies  -> Create a policie
+2.JSON tab -> paste the following permission or you can write it by yourself by using the help of the 
+  thing's that are provided by the AWS in the right section 
+3.The json  code will look like this: 
+   {
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:PutObject",
+                "s3:GetObject",
+                "s3:ListBucket"
+            ],
+            "Resource": [
+                "arn:aws:s3:::project2-private-bucket",
+                "arn:aws:s3:::project2-private-bucket/*"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:ListAllMyBuckets"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+
+Name it and attach it to the user 
+
+Step 3: Configure the AWS cli [if you have provided the AWS console access]
+---------------------------------------------------------------------------
+>> AWS configure 
