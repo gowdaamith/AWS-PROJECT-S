@@ -1,0 +1,18 @@
+Goal : Build a private S3 bucket where files can be accessed ONLY through pre-signed URL's
+
+What we will explore here is :
+*Private S3 bucket
+*IAM roles and permission's
+*Pre-signed URL'S()
+*Object ACL basics
+*Accrss denied troubleshooting 
+*CLI + SDK usage
+*Security best pratices
+
+Step 1: Create a private S3 bucket
+Step 2: Create a IAM user or Role for Access
+Step 3: Attach the policy to Allow access only to this bucket
+Step 4: Install AWS CLI 
+Step 5: Upload a file 
+Step 6: Generate a pre-signed URL  for upload and download
+Step 7: Enable the encryption 
