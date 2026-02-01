@@ -1,0 +1,29 @@
+IAM user:
+---------------
+An IAM user (identify and access management user ) is an individual identity inside your AWS account created to 
+access your AWS services
+Think of it like a creating a login account for different purpose inside your AWS account 
+
+An IAM USER has: 
+*Username
+*Password (for AWS console)
+*Access key (for programatic access)
+*Permission (via policies)
+
+Types of IAM User:
+
+1.Console user:
+*Has username and password 
+*Login through AWS management console
+
+2.Programatic User 
+*Uses Access key  + Secret key 
+*ACcesses AWS using :
+  - AWS CLI
+  - SDK'S
+  - API calls
+
+3.User with both console and Programmatic access
+*Has password  and access key 
+*Can log in to console and use AWS cli
+
